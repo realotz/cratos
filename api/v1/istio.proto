@@ -1,0 +1,21 @@
+// 定义项目 API 的 proto 文件 可以同时描述 gRPC 和 HTTP API
+// protobuf 文件参考:
+//  - https://developers.google.com/protocol-buffers/
+syntax = "proto3";
+package cratos.service.v1;
+option go_package = "github.com/realotz/cratos/api/v1;book";
+option java_multiple_files = true;
+option java_package = "com.github.api.istio.v1";
+option java_outer_classname = "IstioProto";
+
+service IstioService {
+  rpc CheckInfo(Request) returns (Response);
+}
+
+message Request{
+
+}
+
+message Response{
+
+}
