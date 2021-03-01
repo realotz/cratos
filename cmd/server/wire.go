@@ -7,7 +7,9 @@ import (
 	"github.com/go-kratos/kratos/v2"
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/google/wire"
+	"github.com/realotz/cratos/internal/biz"
 	"github.com/realotz/cratos/internal/conf"
+	"github.com/realotz/cratos/internal/data"
 	"github.com/realotz/cratos/internal/server"
 	"github.com/realotz/cratos/internal/service"
 )

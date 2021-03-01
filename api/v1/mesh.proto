@@ -1,0 +1,37 @@
+// 定义项目 API 的 proto 文件 可以同时描述 gRPC 和 HTTP API
+// protobuf 文件参考:
+//  - https://developers.google.com/protocol-buffers/
+syntax = "proto3";
+package cratos.service.v1;
+option go_package = "github.com/realotz/cratos/api/v1;mesh";
+option java_multiple_files = true;
+option java_package = "com.github.api.mesh.v1";
+option java_outer_classname = "MeshProto";
+
+service Mesh {
+  rpc CheckInfo(Request) returns (Response);
+  // gateway列表
+  rpc GetGatewayList(GetGatewayOption) returns(GatewayList);
+  // Create Gateway
+  rpc CreateGateway(Gateway) returns(Response);
+}
+
+message GetGatewayOption{
+
+}
+
+message Gateway{
+
+}
+
+message GatewayList{
+
+}
+
+message Request{
+
+}
+
+message Response{
+
+}

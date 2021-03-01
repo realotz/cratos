@@ -2,16 +2,14 @@ package main
 
 import (
 	"flag"
-	"fmt"
 	"github.com/go-kratos/kratos/v2"
 	"github.com/go-kratos/kratos/v2/config"
+	"github.com/go-kratos/kratos/v2/config/file"
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-kratos/kratos/v2/transport/grpc"
 	"github.com/go-kratos/kratos/v2/transport/http"
-	kc "github.com/go-kratos/kube/config"
 	pb "github.com/realotz/cratos/api/v1"
 	"github.com/realotz/cratos/internal/conf"
-	"github.com/realotz/cratos/internal/service"
 	"gopkg.in/yaml.v2"
 	"os"
 )
@@ -27,12 +25,12 @@ var (
 )
 
 func init() {
-	flag.StringVar(&flagconf, "conf", "", "config path, eg: -conf kube config file ")
+	flag.StringVar(&flagconf, "conf", "", "config")
 }
 
-func newApp(logger log.Logger, hs *http.Server, gs *grpc.Server, greeter *service.IstioService) *kratos.App {
-	pb.RegisterIstioServiceServer(gs, greeter)
-	pb.RegisterIstioServiceHTTPServer(hs, greeter)
+func newApp(logger log.Logger, hs *http.Server, gs *grpc.Server, greeter pb.MeshServer) *kratos.App {
+	pb.RegisterMeshServer(gs, greeter)
+	pb.RegisterMeshHTTPServer(hs, greeter)
 	return kratos.New(
 		kratos.Name(Name),
 		kratos.Version(Version),
@@ -55,13 +53,10 @@ func getEnv(key string, def string) string {
 
 func main() {
 	flag.Parse()
-	logger := log.NewStdLogger()
+	logger := log.NewStdLogger(os.Stdout)
 	cfg := config.New(
 		config.WithSource(
-			kc.NewSource(kc.Namespace(getEnv("POD_NAMESPACE", "mesh")),
-				kc.LabelSelector("app=comm"),
-				kc.KubeConfig(flagconf),
-			),
+			file.NewSource(flagconf),
 		),
 		config.WithDecoder(func(kv *config.KeyValue, v map[string]interface{}) error {
 			return yaml.Unmarshal(kv.Value, v)
