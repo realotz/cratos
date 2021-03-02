@@ -17,7 +17,7 @@ func main() {
 
 	app := cli.NewApp()
 	app.Name = "deployer"
-	app.Usage = "Deploy/upgrade deployments on cratos k8s"
+	app.Usage = "Deploy/upgrade deployments on cratos k8s.io"
 	app.Version = version
 
 	app.Flags = []cli.Flag{
@@ -45,7 +45,7 @@ func main() {
 		cli.StringFlag{
 			Name:  "namespace,ns",
 			Value: "",
-			Usage: "k8s namespace",
+			Usage: "k8s.io namespace",
 		},
 		cli.StringFlag{
 			Name:  "image,i",

@@ -9,6 +9,7 @@ require (
 	github.com/google/uuid v1.2.0 // indirect
 	github.com/google/wire v0.5.0
 	github.com/imdario/mergo v0.3.11 // indirect
+	github.com/json-iterator/go v1.1.10 // indirect
 	github.com/kr/text v0.2.0 // indirect
 	github.com/mattn/go-sqlite3 v1.14.6 // indirect
 	github.com/niemeyer/pretty v0.0.0-20200227124842-a10e7caefd8e // indirect
@@ -24,6 +25,7 @@ require (
 	gopkg.in/yaml.v2 v2.4.0
 	gorm.io/driver/sqlite v1.1.4
 	gorm.io/gorm v1.20.12
+	istio.io/api v0.0.0-20210128181506-0c4b8e54850f // indirect
 	istio.io/client-go v0.0.0-20210128182905-ee2edd059e02
 	k8s.io/apiextensions-apiserver v0.20.4
 	k8s.io/apimachinery v0.20.4

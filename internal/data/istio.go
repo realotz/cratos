@@ -1,12 +1,10 @@
 package data
 
 import (
-	"context"
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/realotz/cratos/internal/biz"
-	"istio.io/client-go/pkg/apis/networking/v1beta1"
 	versionedclient "istio.io/client-go/pkg/clientset/versioned"
-	"k8s.io/apimachinery/pkg/apis/meta/v1"
+	v1beta1client "istio.io/client-go/pkg/clientset/versioned/typed/networking/v1beta1"
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
 )
@@ -42,6 +40,6 @@ type istioRepo struct {
 	client *versionedclient.Clientset
 }
 
-func (d *istioRepo) GetGatewayList(ctx context.Context, ns string, op v1.ListOptions) (*v1beta1.GatewayList, error) {
-	return d.client.NetworkingV1beta1().Gateways(ns).List(ctx, op)
+func (d *istioRepo) GetGatewayV1beta1(ns string) v1beta1client.GatewayInterface {
+	return d.client.NetworkingV1beta1().Gateways(ns)
 }

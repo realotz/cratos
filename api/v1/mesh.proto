@@ -2,8 +2,11 @@
 // protobuf 文件参考:
 //  - https://developers.google.com/protocol-buffers/
 syntax = "proto3";
-package cratos.service.v1;
-option go_package = "github.com/realotz/cratos/api/v1;mesh";
+import "istio.io/api/networking/v1beta1/gateway.proto";
+import "kube.proto";
+import "kratos/api/annotations.proto";
+package cratos.api.v1;
+option go_package = "github.com/realotz/cratos/api/v1;v1";
 option java_multiple_files = true;
 option java_package = "com.github.api.mesh.v1";
 option java_outer_classname = "MeshProto";
@@ -11,21 +14,43 @@ option java_outer_classname = "MeshProto";
 service Mesh {
   rpc CheckInfo(Request) returns (Response);
   // gateway列表
-  rpc GetGatewayList(GetGatewayOption) returns(GatewayList);
-  // Create Gateway
+  rpc GetGatewayList(ListOption) returns(GatewayList);
+  // 创建 Gateway
   rpc CreateGateway(Gateway) returns(Response);
+  // 更新 Gateway
+  rpc UpdateGateway(Gateway) returns(Response);
+  // 删除gateway
+  rpc DeleteGateway(DeleteKind) returns(Response);
 }
 
-message GetGatewayOption{
-
-}
-
-message Gateway{
-
+message ListOption{
+  int64 limit = 1;
+  string continue = 2;
+  string labelSelector = 3;
+  string fieldSelector = 4;
+  string namespace = 5;
 }
 
 message GatewayList{
+  repeated Gateway list = 1;
+}
 
+message Gateway{
+  string apiVersion = 1;
+  string kind = 2;
+  istio.networking.v1beta1.Gateway spec = 3;
+  v1.ObjectMeta metadata = 4;
+}
+
+enum Status {
+  option (kratos.api.errors) = true;
+  NotName = 0;
+  NotNamespace = 1;
+}
+
+message DeleteKind{
+  string name = 1;
+  string namespace = 2;
 }
 
 message Request{
