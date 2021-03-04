@@ -3,8 +3,9 @@
 //  - https://developers.google.com/protocol-buffers/
 syntax = "proto3";
 import "istio.io/api/networking/v1beta1/gateway.proto";
-import "kube.proto";
+import "k8s.io/apimachinery/pkg/apis/meta/v1/generated.proto";
 import "kratos/api/annotations.proto";
+import "google/api/annotations.proto";
 package cratos.api.v1;
 option go_package = "github.com/realotz/cratos/api/v1;v1";
 option java_multiple_files = true;
@@ -12,15 +13,44 @@ option java_package = "com.github.api.mesh.v1";
 option java_outer_classname = "MeshProto";
 
 service Mesh {
-  rpc CheckInfo(Request) returns (Response);
+  rpc CheckInfo(Request) returns (Response){
+    option (google.api.http) = {
+      get:"/cratos.api.v1.Mesh/CheckInfo"
+    };
+  };
   // gateway列表
-  rpc GetGatewayList(ListOption) returns(GatewayList);
+  rpc GetGatewayList(ListOption) returns(GatewayList){
+    option (google.api.http) = {
+      get:"/cratos.api.v1.Mesh/GetGatewayList"
+    };
+  };
+  // 获取gateway
+  rpc GetGateway(GetKind) returns(Gateway){
+    option (google.api.http) = {
+      get:"/cratos.api.v1.Mesh/GetGateway"
+    };
+  };
+
   // 创建 Gateway
-  rpc CreateGateway(Gateway) returns(Response);
+  rpc CreateGateway(Gateway) returns(Response){
+    option (google.api.http) = {
+      post:"/cratos.api.v1.Mesh/CreateGateway"
+      body:"*"
+    };
+  };
   // 更新 Gateway
-  rpc UpdateGateway(Gateway) returns(Response);
+  rpc UpdateGateway(Gateway) returns(Response){
+    option (google.api.http) = {
+      post:"/cratos.api.v1.Mesh/UpdateGateway"
+      body:"*"
+    };
+  };
   // 删除gateway
-  rpc DeleteGateway(DeleteKind) returns(Response);
+  rpc DeleteGateway(DeleteKind) returns(Response){
+    option (google.api.http) = {
+      delete:"/cratos.api.v1.Mesh/DeleteGateway"
+    };
+  };
 }
 
 message ListOption{
@@ -39,7 +69,7 @@ message Gateway{
   string apiVersion = 1;
   string kind = 2;
   istio.networking.v1beta1.Gateway spec = 3;
-  v1.ObjectMeta metadata = 4;
+  k8s.io.apimachinery.pkg.apis.meta.v1.ObjectMeta metadata = 4;
 }
 
 enum Status {
@@ -48,15 +78,17 @@ enum Status {
   NotNamespace = 1;
 }
 
+message GetKind{
+  string name = 1;
+  string namespace = 2;
+  string version = 3;
+}
+
 message DeleteKind{
   string name = 1;
   string namespace = 2;
 }
 
-message Request{
+message Request{}
 
-}
-
-message Response{
-
-}
+message Response{}

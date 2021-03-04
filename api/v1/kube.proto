@@ -3,6 +3,7 @@
 //  - https://developers.google.com/protocol-buffers/
 syntax = "proto3";
 import "google/protobuf/any.proto";
+import "google/protobuf/duration.proto";
 package cratos.api.v1;
 option go_package = "github.com/realotz/cratos/api/v1;v1";
 option java_multiple_files = true;
@@ -26,9 +27,9 @@ message ObjectMeta {
 
   int64 generation = 7;
 
-  Time creationTimestamp = 8;
+  string creationTimestamp = 8;
 
-  Time deletionTimestamp = 9;
+  string deletionTimestamp = 9;
 
   int64 deletionGracePeriodSeconds = 10;
 
@@ -62,13 +63,7 @@ message ManagedFieldsEntry {
   string manager = 1;
   string operation = 2;
   string apiVersion = 3;
-  Time time = 4;
+  string time = 4;
   string fieldsType = 6;
   FieldsV1 fieldsV1 = 7;
 }
-
-message Time {
-  int64 seconds = 1;
-  int32 nanos = 2;
-}
-

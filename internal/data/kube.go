@@ -32,6 +32,7 @@ func getKubeClient(cfg string) (*clientset.Clientset, error) {
 // NewKubeRepo .
 func NewKubeRepo(data *Data, logger log.Logger) biz.KubeRepo {
 	client, _ := getKubeClient(data.cfg.Istio.Config)
+	client.ApiextensionsV1().CustomResourceDefinitions()
 	return &kubeRepo{
 		data:   data,
 		client: client,

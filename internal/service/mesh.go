@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"fmt"
 	"github.com/go-kratos/kratos/v2/errors"
 	"github.com/go-kratos/kratos/v2/log"
 	pb "github.com/realotz/cratos/api/v1"
@@ -18,6 +19,26 @@ type MeshService struct {
 	pb.UnimplementedMeshServer
 	uc  *biz.IstioUsecase
 	log *log.Helper
+}
+
+func (s *MeshService) GetGateway(ctx context.Context, kind *pb.GetKind) (*pb.Gateway, error) {
+	if kind.Name == "" {
+		return nil, errors.Errorf(http.StatusBadRequest, pb.Errors_NotName, "错误参数，未传入name")
+	}
+	if kind.Namespace == "" {
+		return nil, errors.Errorf(http.StatusBadRequest, pb.Errors_NotName, "错误参数，未传入namespace")
+	}
+	res, err := s.uc.GetGateway(ctx, kind.Namespace, kind.Name, kind.Version)
+	if err != nil {
+		return nil, err
+	}
+	gateway := &pb.Gateway{
+		ApiVersion: res.APIVersion,
+		Kind:       res.Kind,
+		Spec:       res.Spec.DeepCopy(),
+	}
+	_ = utils.StudentToStudentForJson(res.ObjectMeta, &gateway.Metadata)
+	return gateway, nil
 }
 
 func (s *MeshService) DeleteGateway(ctx context.Context, kind *pb.DeleteKind) (*pb.Response, error) {
@@ -49,6 +70,7 @@ func (s *MeshService) CreateGateway(ctx context.Context, gateway *pb.Gateway) (*
 }
 
 func (s *MeshService) UpdateGateway(ctx context.Context, gateway *pb.Gateway) (*pb.Response, error) {
+	fmt.Println(gateway)
 	if gateway.Metadata.GetName() == "" {
 		return nil, errors.Errorf(http.StatusBadRequest, pb.Errors_NotName, "错误参数，未传入name")
 	}

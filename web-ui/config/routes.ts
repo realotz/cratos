@@ -29,7 +29,7 @@ export default [
       {
         path: '/mesh/networking',
         name: 'networking',
-        routes:[
+        routes: [
           {
             path: '/mesh/networking/gateway',
             name: 'gateway',
@@ -61,7 +61,7 @@ export default [
             name: 'service-entry',
             component: './Mesh/ServiceEntry',
           },
-        ]
+        ],
       },
       {
         path: '/mesh/security',
@@ -88,9 +88,15 @@ export default [
             name: 'authorizatio-policy',
             component: './Mesh/AuthorizatioPolic',
           },
-        ]
+        ],
       },
     ],
+  },
+  {
+    name: '标准列表',
+    icon: 'smile',
+    path: '/listbasiclist',
+    component: './ListBasicList',
   },
   {
     name: 'list.table-list',

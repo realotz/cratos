@@ -20,11 +20,14 @@ import (
 func initApp(confServer *conf.Server, confData *conf.Data, logger log.Logger) (*kratos.App, error) {
 	httpServer := server.NewHTTPServer(confServer)
 	grpcServer := server.NewGRPCServer(confServer)
-	dataData, err := data.NewData(confData)
+	dataData, err := data.NewData(confData, logger)
 	if err != nil {
 		return nil, err
 	}
-	istioRepo := data.NewIstioRepo(dataData, logger)
+	istioRepo, err := data.NewIstioRepo(dataData, logger)
+	if err != nil {
+		return nil, err
+	}
 	istioUsecase := biz.NewIstioUsecase(istioRepo, logger)
 	meshServer := service.NewMeshService(istioUsecase, logger)
 	app := newApp(logger, httpServer, grpcServer, meshServer)

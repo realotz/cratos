@@ -20,6 +20,8 @@ type MeshHTTPServer interface {
 
 	DeleteGateway(context.Context, *DeleteKind) (*Response, error)
 
+	GetGateway(context.Context, *GetKind) (*Gateway, error)
+
 	GetGatewayList(context.Context, *ListOption) (*GatewayList, error)
 
 	UpdateGateway(context.Context, *Gateway) (*Response, error)
@@ -57,10 +59,24 @@ func _HTTP_Mesh_GetGatewayList_0(srv interface{}, ctx context.Context, req *http
 	return out, nil
 }
 
+func _HTTP_Mesh_GetGateway_0(srv interface{}, ctx context.Context, req *http.Request, dec func(interface{}) error) (interface{}, error) {
+	var in GetKind
+
+	if err := http1.BindForm(req, &in); err != nil {
+		return nil, err
+	}
+
+	out, err := srv.(MeshServer).GetGateway(ctx, &in)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func _HTTP_Mesh_CreateGateway_0(srv interface{}, ctx context.Context, req *http.Request, dec func(interface{}) error) (interface{}, error) {
 	var in Gateway
 
-	if err := http1.BindForm(req, &in); err != nil {
+	if err := dec(&in); err != nil {
 		return nil, err
 	}
 
@@ -74,7 +90,7 @@ func _HTTP_Mesh_CreateGateway_0(srv interface{}, ctx context.Context, req *http.
 func _HTTP_Mesh_UpdateGateway_0(srv interface{}, ctx context.Context, req *http.Request, dec func(interface{}) error) (interface{}, error) {
 	var in Gateway
 
-	if err := http1.BindForm(req, &in); err != nil {
+	if err := dec(&in); err != nil {
 		return nil, err
 	}
 
@@ -105,14 +121,20 @@ var _HTTP_Mesh_serviceDesc = http1.ServiceDesc{
 
 		{
 			Path:    "/cratos.api.v1.Mesh/CheckInfo",
-			Method:  "POST",
+			Method:  "GET",
 			Handler: _HTTP_Mesh_CheckInfo_0,
 		},
 
 		{
 			Path:    "/cratos.api.v1.Mesh/GetGatewayList",
-			Method:  "POST",
+			Method:  "GET",
 			Handler: _HTTP_Mesh_GetGatewayList_0,
+		},
+
+		{
+			Path:    "/cratos.api.v1.Mesh/GetGateway",
+			Method:  "GET",
+			Handler: _HTTP_Mesh_GetGateway_0,
 		},
 
 		{
@@ -129,7 +151,7 @@ var _HTTP_Mesh_serviceDesc = http1.ServiceDesc{
 
 		{
 			Path:    "/cratos.api.v1.Mesh/DeleteGateway",
-			Method:  "POST",
+			Method:  "DELETE",
 			Handler: _HTTP_Mesh_DeleteGateway_0,
 		},
 	},

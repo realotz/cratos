@@ -21,6 +21,8 @@ type MeshClient interface {
 	CheckInfo(ctx context.Context, in *Request, opts ...grpc.CallOption) (*Response, error)
 	// gateway列表
 	GetGatewayList(ctx context.Context, in *ListOption, opts ...grpc.CallOption) (*GatewayList, error)
+	// 获取gateway
+	GetGateway(ctx context.Context, in *GetKind, opts ...grpc.CallOption) (*Gateway, error)
 	// 创建 Gateway
 	CreateGateway(ctx context.Context, in *Gateway, opts ...grpc.CallOption) (*Response, error)
 	// 更新 Gateway
@@ -49,6 +51,15 @@ func (c *meshClient) CheckInfo(ctx context.Context, in *Request, opts ...grpc.Ca
 func (c *meshClient) GetGatewayList(ctx context.Context, in *ListOption, opts ...grpc.CallOption) (*GatewayList, error) {
 	out := new(GatewayList)
 	err := c.cc.Invoke(ctx, "/cratos.api.v1.Mesh/GetGatewayList", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *meshClient) GetGateway(ctx context.Context, in *GetKind, opts ...grpc.CallOption) (*Gateway, error) {
+	out := new(Gateway)
+	err := c.cc.Invoke(ctx, "/cratos.api.v1.Mesh/GetGateway", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -89,6 +100,8 @@ type MeshServer interface {
 	CheckInfo(context.Context, *Request) (*Response, error)
 	// gateway列表
 	GetGatewayList(context.Context, *ListOption) (*GatewayList, error)
+	// 获取gateway
+	GetGateway(context.Context, *GetKind) (*Gateway, error)
 	// 创建 Gateway
 	CreateGateway(context.Context, *Gateway) (*Response, error)
 	// 更新 Gateway
@@ -107,6 +120,9 @@ func (UnimplementedMeshServer) CheckInfo(context.Context, *Request) (*Response, 
 }
 func (UnimplementedMeshServer) GetGatewayList(context.Context, *ListOption) (*GatewayList, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetGatewayList not implemented")
+}
+func (UnimplementedMeshServer) GetGateway(context.Context, *GetKind) (*Gateway, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetGateway not implemented")
 }
 func (UnimplementedMeshServer) CreateGateway(context.Context, *Gateway) (*Response, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateGateway not implemented")
@@ -162,6 +178,24 @@ func _Mesh_GetGatewayList_Handler(srv interface{}, ctx context.Context, dec func
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(MeshServer).GetGatewayList(ctx, req.(*ListOption))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Mesh_GetGateway_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetKind)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MeshServer).GetGateway(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/cratos.api.v1.Mesh/GetGateway",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MeshServer).GetGateway(ctx, req.(*GetKind))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -234,6 +268,10 @@ var Mesh_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetGatewayList",
 			Handler:    _Mesh_GetGatewayList_Handler,
+		},
+		{
+			MethodName: "GetGateway",
+			Handler:    _Mesh_GetGateway_Handler,
 		},
 		{
 			MethodName: "CreateGateway",

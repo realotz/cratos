@@ -62,9 +62,10 @@ func (uc *IstioUsecase) UpdateGateway(ctx context.Context, req *pb.Gateway) (*v1
 			APIVersion: ApiVersion,
 		},
 		ObjectMeta: v1.ObjectMeta{
-			Name:      req.Metadata.GetName(),
-			Namespace: req.Metadata.GetNamespace(),
-			Labels:    req.Metadata.GetLabels(),
+			Name:            req.Metadata.GetName(),
+			Namespace:       req.Metadata.GetNamespace(),
+			Labels:          req.Metadata.GetLabels(),
+			ResourceVersion: req.Metadata.GetResourceVersion(),
 		},
 		Spec: *req.Spec,
 	}, v1.UpdateOptions{})
@@ -72,4 +73,10 @@ func (uc *IstioUsecase) UpdateGateway(ctx context.Context, req *pb.Gateway) (*v1
 
 func (uc *IstioUsecase) DelGateway(ctx context.Context, ns string, name string) error {
 	return uc.repo.GetGatewayV1beta1(ns).Delete(ctx, name, v1.DeleteOptions{})
+}
+
+func (uc *IstioUsecase) GetGateway(ctx context.Context, ns string, name, version string) (*v1beta1.Gateway, error) {
+	return uc.repo.GetGatewayV1beta1(ns).Get(ctx, name, v1.GetOptions{
+		ResourceVersion: version,
+	})
 }
