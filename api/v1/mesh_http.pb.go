@@ -5,15 +5,21 @@ package v1
 import (
 	context "context"
 	http1 "github.com/go-kratos/kratos/v2/transport/http"
+	binding "github.com/go-kratos/kratos/v2/transport/http/binding"
+	mux "github.com/gorilla/mux"
 	http "net/http"
 )
 
 // This is a compile-time assertion to ensure that this generated file
 // is compatible with the kratos package it is being compiled against.
-// context./http.
+var _ = new(http.Request)
+var _ = new(context.Context)
+var _ = binding.MapProto
+var _ = mux.NewRouter
+
 const _ = http1.SupportPackageIsVersion1
 
-type MeshHTTPServer interface {
+type MeshHandler interface {
 	CheckInfo(context.Context, *Request) (*Response, error)
 
 	CreateGateway(context.Context, *Gateway) (*Response, error)
@@ -27,133 +33,150 @@ type MeshHTTPServer interface {
 	UpdateGateway(context.Context, *Gateway) (*Response, error)
 }
 
-func RegisterMeshHTTPServer(s http1.ServiceRegistrar, srv MeshHTTPServer) {
-	s.RegisterService(&_HTTP_Mesh_serviceDesc, srv)
-}
-
-func _HTTP_Mesh_CheckInfo_0(srv interface{}, ctx context.Context, req *http.Request, dec func(interface{}) error) (interface{}, error) {
-	var in Request
-
-	if err := http1.BindForm(req, &in); err != nil {
-		return nil, err
+func NewMeshHandler(srv MeshHandler, opts ...http1.HandleOption) http.Handler {
+	h := http1.DefaultHandleOptions()
+	for _, o := range opts {
+		o(&h)
 	}
+	r := mux.NewRouter()
 
-	out, err := srv.(MeshServer).CheckInfo(ctx, &in)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
+	r.HandleFunc("/cratos.api.v1.Mesh/CheckInfo", func(w http.ResponseWriter, r *http.Request) {
+		var in Request
 
-func _HTTP_Mesh_GetGatewayList_0(srv interface{}, ctx context.Context, req *http.Request, dec func(interface{}) error) (interface{}, error) {
-	var in ListOption
+		if err := h.Decode(r, &in); err != nil {
+			h.Error(w, r, err)
+			return
+		}
+		next := func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.CheckInfo(ctx, req.(*Request))
+		}
+		if h.Middleware != nil {
+			next = h.Middleware(next)
+		}
+		out, err := next(r.Context(), &in)
+		if err != nil {
+			h.Error(w, r, err)
+			return
+		}
+		if err := h.Encode(w, r, out); err != nil {
+			h.Error(w, r, err)
+		}
+	}).Methods("GET")
 
-	if err := http1.BindForm(req, &in); err != nil {
-		return nil, err
-	}
+	r.HandleFunc("/cratos.api.v1.Mesh/GetGatewayList", func(w http.ResponseWriter, r *http.Request) {
+		var in ListOption
 
-	out, err := srv.(MeshServer).GetGatewayList(ctx, &in)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
+		if err := h.Decode(r, &in); err != nil {
+			h.Error(w, r, err)
+			return
+		}
+		next := func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.GetGatewayList(ctx, req.(*ListOption))
+		}
+		if h.Middleware != nil {
+			next = h.Middleware(next)
+		}
+		out, err := next(r.Context(), &in)
+		if err != nil {
+			h.Error(w, r, err)
+			return
+		}
+		if err := h.Encode(w, r, out); err != nil {
+			h.Error(w, r, err)
+		}
+	}).Methods("GET")
 
-func _HTTP_Mesh_GetGateway_0(srv interface{}, ctx context.Context, req *http.Request, dec func(interface{}) error) (interface{}, error) {
-	var in GetKind
+	r.HandleFunc("/cratos.api.v1.Mesh/GetGateway", func(w http.ResponseWriter, r *http.Request) {
+		var in GetKind
 
-	if err := http1.BindForm(req, &in); err != nil {
-		return nil, err
-	}
+		if err := h.Decode(r, &in); err != nil {
+			h.Error(w, r, err)
+			return
+		}
+		next := func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.GetGateway(ctx, req.(*GetKind))
+		}
+		if h.Middleware != nil {
+			next = h.Middleware(next)
+		}
+		out, err := next(r.Context(), &in)
+		if err != nil {
+			h.Error(w, r, err)
+			return
+		}
+		if err := h.Encode(w, r, out); err != nil {
+			h.Error(w, r, err)
+		}
+	}).Methods("GET")
 
-	out, err := srv.(MeshServer).GetGateway(ctx, &in)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
+	r.HandleFunc("/cratos.api.v1.Mesh/CreateGateway", func(w http.ResponseWriter, r *http.Request) {
+		var in Gateway
 
-func _HTTP_Mesh_CreateGateway_0(srv interface{}, ctx context.Context, req *http.Request, dec func(interface{}) error) (interface{}, error) {
-	var in Gateway
+		if err := h.Decode(r, &in); err != nil {
+			h.Error(w, r, err)
+			return
+		}
+		next := func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.CreateGateway(ctx, req.(*Gateway))
+		}
+		if h.Middleware != nil {
+			next = h.Middleware(next)
+		}
+		out, err := next(r.Context(), &in)
+		if err != nil {
+			h.Error(w, r, err)
+			return
+		}
+		if err := h.Encode(w, r, out); err != nil {
+			h.Error(w, r, err)
+		}
+	}).Methods("POST")
 
-	if err := dec(&in); err != nil {
-		return nil, err
-	}
+	r.HandleFunc("/cratos.api.v1.Mesh/UpdateGateway", func(w http.ResponseWriter, r *http.Request) {
+		var in Gateway
 
-	out, err := srv.(MeshServer).CreateGateway(ctx, &in)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
+		if err := h.Decode(r, &in); err != nil {
+			h.Error(w, r, err)
+			return
+		}
+		next := func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.UpdateGateway(ctx, req.(*Gateway))
+		}
+		if h.Middleware != nil {
+			next = h.Middleware(next)
+		}
+		out, err := next(r.Context(), &in)
+		if err != nil {
+			h.Error(w, r, err)
+			return
+		}
+		if err := h.Encode(w, r, out); err != nil {
+			h.Error(w, r, err)
+		}
+	}).Methods("POST")
 
-func _HTTP_Mesh_UpdateGateway_0(srv interface{}, ctx context.Context, req *http.Request, dec func(interface{}) error) (interface{}, error) {
-	var in Gateway
+	r.HandleFunc("/cratos.api.v1.Mesh/DeleteGateway", func(w http.ResponseWriter, r *http.Request) {
+		var in DeleteKind
 
-	if err := dec(&in); err != nil {
-		return nil, err
-	}
+		if err := h.Decode(r, &in); err != nil {
+			h.Error(w, r, err)
+			return
+		}
+		next := func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.DeleteGateway(ctx, req.(*DeleteKind))
+		}
+		if h.Middleware != nil {
+			next = h.Middleware(next)
+		}
+		out, err := next(r.Context(), &in)
+		if err != nil {
+			h.Error(w, r, err)
+			return
+		}
+		if err := h.Encode(w, r, out); err != nil {
+			h.Error(w, r, err)
+		}
+	}).Methods("DELETE")
 
-	out, err := srv.(MeshServer).UpdateGateway(ctx, &in)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func _HTTP_Mesh_DeleteGateway_0(srv interface{}, ctx context.Context, req *http.Request, dec func(interface{}) error) (interface{}, error) {
-	var in DeleteKind
-
-	if err := http1.BindForm(req, &in); err != nil {
-		return nil, err
-	}
-
-	out, err := srv.(MeshServer).DeleteGateway(ctx, &in)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-var _HTTP_Mesh_serviceDesc = http1.ServiceDesc{
-	ServiceName: "cratos.api.v1.Mesh",
-	Methods: []http1.MethodDesc{
-
-		{
-			Path:    "/cratos.api.v1.Mesh/CheckInfo",
-			Method:  "GET",
-			Handler: _HTTP_Mesh_CheckInfo_0,
-		},
-
-		{
-			Path:    "/cratos.api.v1.Mesh/GetGatewayList",
-			Method:  "GET",
-			Handler: _HTTP_Mesh_GetGatewayList_0,
-		},
-
-		{
-			Path:    "/cratos.api.v1.Mesh/GetGateway",
-			Method:  "GET",
-			Handler: _HTTP_Mesh_GetGateway_0,
-		},
-
-		{
-			Path:    "/cratos.api.v1.Mesh/CreateGateway",
-			Method:  "POST",
-			Handler: _HTTP_Mesh_CreateGateway_0,
-		},
-
-		{
-			Path:    "/cratos.api.v1.Mesh/UpdateGateway",
-			Method:  "POST",
-			Handler: _HTTP_Mesh_UpdateGateway_0,
-		},
-
-		{
-			Path:    "/cratos.api.v1.Mesh/DeleteGateway",
-			Method:  "DELETE",
-			Handler: _HTTP_Mesh_DeleteGateway_0,
-		},
-	},
-	Metadata: "mesh.proto",
+	return r
 }

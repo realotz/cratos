@@ -11,7 +11,7 @@ import (
 	"net/http"
 )
 
-func NewMeshService(uc *biz.IstioUsecase, logger log.Logger) pb.MeshServer {
+func NewMeshService(uc *biz.IstioUsecase, logger log.Logger) *MeshService {
 	return &MeshService{uc: uc, log: log.NewHelper("service/mesh", logger)}
 }
 
@@ -94,15 +94,5 @@ func (s *MeshService) GetGatewayList(ctx context.Context, req *pb.ListOption) (*
 	if err != nil {
 		return nil, err
 	}
-	resp := &pb.GatewayList{List: make([]*pb.Gateway, 0)}
-	for _, v := range list {
-		gateway := &pb.Gateway{
-			ApiVersion: v.APIVersion,
-			Kind:       v.Kind,
-			Spec:       v.Spec.DeepCopy(),
-		}
-		_ = utils.StudentToStudentForJson(v.ObjectMeta, &gateway.Metadata)
-		resp.List = append(resp.List, gateway)
-	}
-	return resp, nil
+	return list, nil
 }

@@ -3,12 +3,14 @@ module github.com/realotz/cratos
 go 1.15
 
 require (
-	github.com/go-kratos/kratos/v2 v2.0.0-alpha4
+	github.com/go-kratos/kratos/v2 v2.0.0-alpha5
 	github.com/golang/protobuf v1.4.3
 	github.com/google/go-cmp v0.5.3 // indirect
 	github.com/google/uuid v1.2.0 // indirect
 	github.com/google/wire v0.5.0
+	github.com/gorilla/mux v1.8.0
 	github.com/imdario/mergo v0.3.11 // indirect
+	github.com/jinzhu/copier v0.2.5 // indirect
 	github.com/json-iterator/go v1.1.10
 	github.com/kr/text v0.2.0 // indirect
 	github.com/mattn/go-sqlite3 v1.14.6 // indirect

@@ -18,8 +18,6 @@ import (
 // Injectors from wire.go:
 
 func initApp(confServer *conf.Server, confData *conf.Data, logger log.Logger) (*kratos.App, error) {
-	httpServer := server.NewHTTPServer(confServer)
-	grpcServer := server.NewGRPCServer(confServer)
 	dataData, err := data.NewData(confData, logger)
 	if err != nil {
 		return nil, err
@@ -29,7 +27,9 @@ func initApp(confServer *conf.Server, confData *conf.Data, logger log.Logger) (*
 		return nil, err
 	}
 	istioUsecase := biz.NewIstioUsecase(istioRepo, logger)
-	meshServer := service.NewMeshService(istioUsecase, logger)
-	app := newApp(logger, httpServer, grpcServer, meshServer)
+	meshService := service.NewMeshService(istioUsecase, logger)
+	httpServer := server.NewHTTPServer(confServer, meshService)
+	grpcServer := server.NewGRPCServer(confServer, meshService)
+	app := newApp(logger, httpServer, grpcServer)
 	return app, nil
 }

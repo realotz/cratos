@@ -2,6 +2,7 @@ package resources
 
 import (
 	"errors"
+	jsoniter "github.com/json-iterator/go"
 	"gorm.io/datatypes"
 	"gorm.io/gorm"
 	"k8s.io/apimachinery/pkg/watch"
@@ -15,6 +16,42 @@ type ConvertsFunc func(interface{}) (*KubeResources, error)
 
 // 转换器集合
 var eventType = make(map[string]ConvertsFunc)
+
+type KubeResourceList struct {
+	Items []KubeResources
+	Total int64
+}
+
+// 转换
+func (r *KubeResourceList) DeepCopyList(impl interface{}) error {
+	stuRef := reflect.ValueOf(impl).Elem()
+	cTypeRef := reflect.TypeOf(impl).Elem().Elem()
+	for _, v := range r.Items {
+		d := reflect.New(cTypeRef.Elem())
+		if d.Elem().FieldByName("Kind").CanSet() {
+			d.Elem().FieldByName("Kind").SetString(v.Kind)
+		}
+
+		if d.Elem().FieldByName("ApiVersion").CanSet() {
+			d.Elem().FieldByName("ApiVersion").SetString(v.APIVersion)
+		}
+
+		if d.Elem().FieldByName("Metadata").CanSet() {
+			meta := reflect.New(d.Elem().FieldByName("Metadata").Type().Elem()).Interface()
+			_ = jsoniter.Unmarshal(v.MeteData, meta)
+			d.Elem().FieldByName("Metadata").Set(reflect.ValueOf(meta))
+		}
+
+		if d.Elem().FieldByName("Spec").CanSet() {
+			spec := reflect.New(d.Elem().FieldByName("Spec").Type().Elem()).Interface()
+			_ = jsoniter.Unmarshal(v.Spec, spec)
+			d.Elem().FieldByName("Spec").Set(reflect.ValueOf(spec))
+			stuRef.Set(reflect.Append(stuRef, d))
+		}
+
+	}
+	return nil
+}
 
 // k8s资产缓存
 type KubeResources struct {

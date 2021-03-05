@@ -3,8 +3,9 @@ package data
 import (
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/realotz/cratos/internal/biz"
+	"github.com/realotz/cratos/internal/data/resources"
 	versionedclient "istio.io/client-go/pkg/clientset/versioned"
-	v1beta1client "istio.io/client-go/pkg/clientset/versioned/typed/networking/v1beta1"
+	v1alpha3client "istio.io/client-go/pkg/clientset/versioned/typed/networking/v1alpha3"
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
 	"time"
@@ -43,6 +44,10 @@ func NewIstioRepo(data *Data, logger log.Logger) (biz.IstioRepo, error) {
 	return repo, nil
 }
 
+func (d *istioRepo) ListResources(option biz.ListOption) (*resources.KubeResourceList, error) {
+	return d.data.listResources(option)
+}
+
 // 注册Watcher 会启动一个Goroutine 初始检查第一次失败无法启动,后续失败会尝试重连
 // 获取watcher event事件后通知数据存储
 func (d *istioRepo) registerWatcher(watcherFunc IstioWatcher) error {
@@ -74,6 +79,6 @@ type istioRepo struct {
 	client *versionedclient.Clientset
 }
 
-func (d *istioRepo) GetGatewayV1beta1(ns string) v1beta1client.GatewayInterface {
-	return d.client.NetworkingV1beta1().Gateways(ns)
+func (d *istioRepo) GetGatewayV1alpha3(ns string) v1alpha3client.GatewayInterface {
+	return d.client.NetworkingV1alpha3().Gateways(ns)
 }

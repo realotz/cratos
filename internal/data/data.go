@@ -4,6 +4,7 @@ import (
 	"errors"
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/google/wire"
+	"github.com/realotz/cratos/internal/biz"
 	"github.com/realotz/cratos/internal/conf"
 	"github.com/realotz/cratos/internal/data/resources"
 	"gorm.io/datatypes"
@@ -32,6 +33,40 @@ func NewData(cfg *conf.Data, logger log.Logger) (*Data, error) {
 		return nil, err
 	}
 	return &Data{cfg: cfg, db: db, log: log.NewHelper("data/base", logger)}, nil
+}
+
+// 查询资源
+func (d *Data) listResources(params biz.ListOption) (*resources.KubeResourceList, error) {
+	kubeList := &resources.KubeResourceList{
+		Items: make([]resources.KubeResources, 0),
+		Total: 0,
+	}
+	db := d.db.Model(&resources.KubeResources{})
+	if params.Name != "" {
+		db = db.Where("name like ?", "%"+params.Name+"%")
+	}
+	if params.Namespace != "" {
+		db = db.Where("namespace = ?", params.Namespace)
+	}
+	if params.Kind != "" {
+		db = db.Where("kind = ?", params.Kind)
+	}
+	if params.Sort != "" {
+		db = db.Order(params.Sort)
+	} else {
+		db = db.Order("id desc")
+	}
+	db.Count(&kubeList.Total)
+	if params.Limit != 0 {
+		db.Limit(params.Limit)
+	}
+	if params.Offset != 0 {
+		db.Offset(params.Limit)
+	}
+	if err := db.Find(&kubeList.Items).Error; err != nil {
+		return nil, err
+	}
+	return kubeList, nil
 }
 
 // k8s资源入库

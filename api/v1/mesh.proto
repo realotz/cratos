@@ -2,7 +2,7 @@
 // protobuf 文件参考:
 //  - https://developers.google.com/protocol-buffers/
 syntax = "proto3";
-import "istio.io/api/networking/v1beta1/gateway.proto";
+import "istio.io/api/networking/v1alpha3/gateway.proto";
 import "k8s.io/apimachinery/pkg/apis/meta/v1/generated.proto";
 import "kratos/api/annotations.proto";
 import "google/api/annotations.proto";
@@ -55,20 +55,21 @@ service Mesh {
 
 message ListOption{
   int64 limit = 1;
-  string continue = 2;
-  string labelSelector = 3;
-  string fieldSelector = 4;
+  int64 Offset = 2;
+  string sort = 3;
+  string name = 4;
   string namespace = 5;
 }
 
 message GatewayList{
   repeated Gateway list = 1;
+  int64 total=2;
 }
 
 message Gateway{
   string apiVersion = 1;
   string kind = 2;
-  istio.networking.v1beta1.Gateway spec = 3;
+  istio.networking.v1alpha3.Gateway spec = 3;
   k8s.io.apimachinery.pkg.apis.meta.v1.ObjectMeta metadata = 4;
 }
 

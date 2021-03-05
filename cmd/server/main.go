@@ -8,7 +8,6 @@ import (
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-kratos/kratos/v2/transport/grpc"
 	"github.com/go-kratos/kratos/v2/transport/http"
-	pb "github.com/realotz/cratos/api/v1"
 	"github.com/realotz/cratos/internal/conf"
 	"gopkg.in/yaml.v2"
 	"os"
@@ -28,9 +27,7 @@ func init() {
 	flag.StringVar(&flagconf, "conf", "", "config")
 }
 
-func newApp(logger log.Logger, hs *http.Server, gs *grpc.Server, greeter pb.MeshServer) *kratos.App {
-	pb.RegisterMeshServer(gs, greeter)
-	pb.RegisterMeshHTTPServer(hs, greeter)
+func newApp(logger log.Logger, hs *http.Server, gs *grpc.Server) *kratos.App {
 	return kratos.New(
 		kratos.Name(Name),
 		kratos.Version(Version),
@@ -38,7 +35,6 @@ func newApp(logger log.Logger, hs *http.Server, gs *grpc.Server, greeter pb.Mesh
 		kratos.Logger(logger),
 		kratos.Server(
 			hs,
-			gs,
 		),
 	)
 }
