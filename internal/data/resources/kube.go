@@ -46,11 +46,19 @@ func (r *KubeResourceList) DeepCopyList(impl interface{}) error {
 		}
 
 		if d.Elem().FieldByName("Spec").CanSet() {
-			spec := reflect.New(d.Elem().FieldByName("Spec").Type().Elem()).Interface()
+			spectRef := d.Elem().FieldByName("Spec").Type()
+			if spectRef.Kind() == reflect.Ptr {
+				spectRef = spectRef.Elem()
+			}
+			spec := reflect.New(spectRef).Interface()
 			_ = jsoniter.Unmarshal(v.Spec, spec)
-			d.Elem().FieldByName("Spec").Set(reflect.ValueOf(spec))
-			stuRef.Set(reflect.Append(stuRef, d))
+			newValue := reflect.ValueOf(spec)
+			if d.Elem().FieldByName("Spec").Kind() != reflect.Ptr {
+				newValue = newValue.Elem()
+			}
+			d.Elem().FieldByName("Spec").Set(newValue)
 		}
+		stuRef.Set(reflect.Append(stuRef, d))
 
 	}
 	return nil

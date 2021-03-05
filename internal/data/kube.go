@@ -35,13 +35,20 @@ func getKubeClient(cfg string) (*kubernetes.Clientset, error) {
 }
 
 // NewKubeRepo .
-func NewKubeRepo(data *Data, logger log.Logger) biz.KubeRepo {
+func NewKubeRepo(data *Data, logger log.Logger) (biz.KubeRepo, error) {
 	client, _ := getKubeClient(data.cfg.Istio.Config)
-	return &kubeRepo{
+	repo := &kubeRepo{
 		data:   data,
 		client: client,
 		log:    log.NewHelper("data/kube", logger),
 	}
+	for _, w := range kubeWatchers {
+		err := repo.registerWatcher(w)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return repo, nil
 }
 
 // 注册Watcher 会启动一个Goroutine 初始检查第一次失败无法启动,后续失败会尝试重连

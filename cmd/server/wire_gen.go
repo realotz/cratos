@@ -28,7 +28,10 @@ func initApp(confServer *conf.Server, confData *conf.Data, logger log.Logger) (*
 	}
 	istioUsecase := biz.NewIstioUsecase(istioRepo, logger)
 	gatewayService := service.NewGatewayService(istioUsecase, logger)
-	kubeRepo := data.NewKubeRepo(dataData, logger)
+	kubeRepo, err := data.NewKubeRepo(dataData, logger)
+	if err != nil {
+		return nil, err
+	}
 	kubeUsecase := biz.NewKubeUsecase(kubeRepo, logger)
 	namespacesService := service.NewNamespacesService(kubeUsecase, logger)
 	httpServer := server.NewHTTPServer(confServer, gatewayService, namespacesService)
