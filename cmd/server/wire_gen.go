@@ -27,9 +27,12 @@ func initApp(confServer *conf.Server, confData *conf.Data, logger log.Logger) (*
 		return nil, err
 	}
 	istioUsecase := biz.NewIstioUsecase(istioRepo, logger)
-	meshService := service.NewMeshService(istioUsecase, logger)
-	httpServer := server.NewHTTPServer(confServer, meshService)
-	grpcServer := server.NewGRPCServer(confServer, meshService)
+	gatewayService := service.NewGatewayService(istioUsecase, logger)
+	kubeRepo := data.NewKubeRepo(dataData, logger)
+	kubeUsecase := biz.NewKubeUsecase(kubeRepo, logger)
+	namespacesService := service.NewNamespacesService(kubeUsecase, logger)
+	httpServer := server.NewHTTPServer(confServer, gatewayService, namespacesService)
+	grpcServer := server.NewGRPCServer(confServer, gatewayService, namespacesService)
 	app := newApp(logger, httpServer, grpcServer)
 	return app, nil
 }

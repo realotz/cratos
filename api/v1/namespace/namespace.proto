@@ -1,0 +1,82 @@
+// 定义项目 API 的 proto 文件 可以同时描述 gRPC 和 HTTP API
+// protobuf 文件参考:
+//  - https://developers.google.com/protocol-buffers/
+syntax = "proto3";
+import "k8s.io/api/core/v1/generated.proto";
+import "kratos/api/annotations.proto";
+import "google/api/annotations.proto";
+package cratos.api.v1.namespace;
+option go_package = "github.com/realotz/cratos/api/v1/namespace;namespace";
+option java_multiple_files = true;
+option java_package = "com.github.api.v1.namespace";
+option java_outer_classname = "NamespaceProto";
+
+service Namespaces {
+  // Namespace列表
+  rpc List(ListOption) returns(NamespaceList){
+    option (google.api.http) = {
+      get:"/cratos.api.v1.Namespace/List"
+    };
+  };
+  // 获取Namespace
+  rpc Get(GetKind) returns(k8s.io.api.core.v1.Namespace){
+    option (google.api.http) = {
+      get:"/cratos.api.v1.Namespace/Get"
+    };
+  };
+
+  // 创建 Namespace
+  rpc Create(k8s.io.api.core.v1.Namespace) returns(Response){
+    option (google.api.http) = {
+      post:"/cratos.api.v1.Namespace/Create"
+      body:"*"
+    };
+  };
+  // 更新 Namespace
+  rpc Update(k8s.io.api.core.v1.Namespace) returns(Response){
+    option (google.api.http) = {
+      post:"/cratos.api.v1.Namespace/Update"
+      body:"*"
+    };
+  };
+  // 删除Namespace
+  rpc Delete(DeleteKind) returns(Response){
+    option (google.api.http) = {
+      delete:"/cratos.api.v1.Namespace/Delete"
+    };
+  };
+}
+
+message ListOption{
+  int64 limit = 1;
+  int64 Offset = 2;
+  string sort = 3;
+  string name = 4;
+  string namespace = 5;
+}
+
+message NamespaceList{
+  repeated k8s.io.api.core.v1.Namespace list = 1;
+  int64 total=2;
+}
+
+enum Status {
+  option (kratos.api.errors) = true;
+  NotName = 0;
+  NotNamespace = 1;
+}
+
+message GetKind{
+  string name = 1;
+  string namespace = 2;
+  string version = 3;
+}
+
+message DeleteKind{
+  string name = 1;
+  string namespace = 2;
+}
+
+message Request{}
+
+message Response{}

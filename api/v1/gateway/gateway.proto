@@ -4,51 +4,47 @@
 syntax = "proto3";
 import "istio.io/api/networking/v1alpha3/gateway.proto";
 import "k8s.io/apimachinery/pkg/apis/meta/v1/generated.proto";
+import "k8s.io/api/core/v1/generated.proto";
 import "kratos/api/annotations.proto";
 import "google/api/annotations.proto";
-package cratos.api.v1;
-option go_package = "github.com/realotz/cratos/api/v1;v1";
+package cratos.api.v1.gateway;
+option go_package = "github.com/realotz/cratos/api/v1/gateway;gateway";
 option java_multiple_files = true;
-option java_package = "com.github.api.mesh.v1";
-option java_outer_classname = "MeshProto";
+option java_package = "com.github.api.v1.gateway";
+option java_outer_classname = "GatewayProto";
 
-service Mesh {
-  rpc CheckInfo(Request) returns (Response){
-    option (google.api.http) = {
-      get:"/cratos.api.v1.Mesh/CheckInfo"
-    };
-  };
+service Gateways {
   // gateway列表
-  rpc GetGatewayList(ListOption) returns(GatewayList){
+  rpc List(ListOption) returns(GatewayList){
     option (google.api.http) = {
-      get:"/cratos.api.v1.Mesh/GetGatewayList"
+      get:"/cratos.api.v1.Gateway/List"
     };
   };
   // 获取gateway
-  rpc GetGateway(GetKind) returns(Gateway){
+  rpc Get(GetKind) returns(Gateway){
     option (google.api.http) = {
-      get:"/cratos.api.v1.Mesh/GetGateway"
+      get:"/cratos.api.v1.Gateway/Get"
     };
   };
 
   // 创建 Gateway
-  rpc CreateGateway(Gateway) returns(Response){
+  rpc Create(Gateway) returns(Response){
     option (google.api.http) = {
-      post:"/cratos.api.v1.Mesh/CreateGateway"
+      post:"/cratos.api.v1.Gateway/Create"
       body:"*"
     };
   };
   // 更新 Gateway
-  rpc UpdateGateway(Gateway) returns(Response){
+  rpc Update(Gateway) returns(Response){
     option (google.api.http) = {
-      post:"/cratos.api.v1.Mesh/UpdateGateway"
+      post:"/cratos.api.v1.Gateway/Update"
       body:"*"
     };
   };
   // 删除gateway
-  rpc DeleteGateway(DeleteKind) returns(Response){
+  rpc Delete(DeleteKind) returns(Response){
     option (google.api.http) = {
-      delete:"/cratos.api.v1.Mesh/DeleteGateway"
+      delete:"/cratos.api.v1.Gateway/Delete"
     };
   };
 }

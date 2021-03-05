@@ -10,7 +10,6 @@ require (
 	github.com/google/wire v0.5.0
 	github.com/gorilla/mux v1.8.0
 	github.com/imdario/mergo v0.3.11 // indirect
-	github.com/jinzhu/copier v0.2.5 // indirect
 	github.com/json-iterator/go v1.1.10
 	github.com/kr/text v0.2.0 // indirect
 	github.com/mattn/go-sqlite3 v1.14.6 // indirect
@@ -30,6 +29,7 @@ require (
 	gorm.io/gorm v1.20.12
 	istio.io/api v0.0.0-20210302211031-2e1e4d7e6f4b
 	istio.io/client-go v0.0.0-20210302212237-0ceb5261e848
+	k8s.io/api v0.20.4
 	k8s.io/apiextensions-apiserver v0.20.4
 	k8s.io/apimachinery v0.20.4
 	k8s.io/client-go v0.20.4

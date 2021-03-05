@@ -1,6 +1,7 @@
 package data
 
 import (
+	"context"
 	"errors"
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/google/wire"
@@ -15,7 +16,7 @@ import (
 )
 
 // ProviderSet is data providers.
-var ProviderSet = wire.NewSet(NewData, NewIstioRepo)
+var ProviderSet = wire.NewSet(NewData, NewIstioRepo, NewKubeRepo)
 
 type Data struct {
 	cfg *conf.Data
@@ -36,12 +37,12 @@ func NewData(cfg *conf.Data, logger log.Logger) (*Data, error) {
 }
 
 // 查询资源
-func (d *Data) listResources(params biz.ListOption) (*resources.KubeResourceList, error) {
+func (d *Data) listResources(ctx context.Context, params biz.ListOption) (*resources.KubeResourceList, error) {
 	kubeList := &resources.KubeResourceList{
 		Items: make([]resources.KubeResources, 0),
 		Total: 0,
 	}
-	db := d.db.Model(&resources.KubeResources{})
+	db := d.db.WithContext(ctx).Model(&resources.KubeResources{})
 	if params.Name != "" {
 		db = db.Where("name like ?", "%"+params.Name+"%")
 	}

@@ -6,6 +6,7 @@ import (
 	jsoniter "github.com/json-iterator/go"
 	"istio.io/client-go/pkg/apis/networking/v1alpha3"
 	"istio.io/client-go/pkg/apis/security/v1beta1"
+	kubev1 "k8s.io/api/core/v1"
 )
 
 type Gateway v1alpha3.Gateway
@@ -20,6 +21,30 @@ func init() {
 	eventType["*v1beta1.RequestAuthentication"] = v1beta1RequestAuthentication
 	eventType["*v1beta1.PeerAuthentication"] = v1beta1PeerAuthentication
 	eventType["*v1beta1.AuthorizationPolicy"] = v1beta1AuthorizationPolicy
+
+	// kube
+	eventType["*v1.Namespace"] = v1Namespace
+}
+
+// Namespace
+func v1Namespace(obj interface{}) (*KubeResources, error) {
+	kindObj, ok := obj.(*kubev1.Namespace)
+	if !ok {
+		return nil, errors.New(fmt.Sprintf("vent object assertion failed *v1beta1.PeerAuthentication %v", obj))
+	}
+	if kindObj.TypeMeta.Kind == "" {
+		kindObj.TypeMeta.Kind = "Namespace"
+		kindObj.TypeMeta.APIVersion = "v1"
+	}
+	resources := &KubeResources{
+		Name:       kindObj.ObjectMeta.Name,
+		Kind:       kindObj.Kind,
+		APIVersion: kindObj.APIVersion,
+	}
+	resources.MeteData, _ = jsoniter.Marshal(kindObj.ObjectMeta)
+	resources.Spec, _ = jsoniter.Marshal(kindObj.Spec)
+	resources.Status, _ = jsoniter.Marshal(kindObj.Status)
+	return resources, nil
 }
 
 // PeerAuthentication

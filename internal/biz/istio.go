@@ -3,7 +3,7 @@ package biz
 import (
 	"context"
 	"github.com/go-kratos/kratos/v2/log"
-	pb "github.com/realotz/cratos/api/v1"
+	pb "github.com/realotz/cratos/api/v1/gateway"
 	"github.com/realotz/cratos/internal/data/resources"
 	"istio.io/client-go/pkg/apis/networking/v1alpha3"
 	v1alpha3client "istio.io/client-go/pkg/clientset/versioned/typed/networking/v1alpha3"
@@ -12,7 +12,7 @@ import (
 
 type IstioRepo interface {
 	GetGatewayV1alpha3(ns string) v1alpha3client.GatewayInterface
-	ListResources(option ListOption) (*resources.KubeResourceList, error)
+	ListResources(ctx context.Context, option ListOption) (*resources.KubeResourceList, error)
 }
 
 type ListOption struct {
@@ -39,7 +39,7 @@ func NewIstioUsecase(repo IstioRepo, logger log.Logger) *IstioUsecase {
 }
 
 func (uc *IstioUsecase) GetGatewayList(ctx context.Context, req *pb.ListOption) (*pb.GatewayList, error) {
-	res, err := uc.repo.ListResources(ListOption{
+	res, err := uc.repo.ListResources(ctx, ListOption{
 		Name:      req.Name,
 		Namespace: req.Namespace,
 		Kind:      "Gateway",

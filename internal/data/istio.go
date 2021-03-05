@@ -1,6 +1,7 @@
 package data
 
 import (
+	"context"
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/realotz/cratos/internal/biz"
 	"github.com/realotz/cratos/internal/data/resources"
@@ -44,8 +45,8 @@ func NewIstioRepo(data *Data, logger log.Logger) (biz.IstioRepo, error) {
 	return repo, nil
 }
 
-func (d *istioRepo) ListResources(option biz.ListOption) (*resources.KubeResourceList, error) {
-	return d.data.listResources(option)
+func (d *istioRepo) ListResources(ctx context.Context, option biz.ListOption) (*resources.KubeResourceList, error) {
+	return d.data.listResources(ctx, option)
 }
 
 // 注册Watcher 会启动一个Goroutine 初始检查第一次失败无法启动,后续失败会尝试重连

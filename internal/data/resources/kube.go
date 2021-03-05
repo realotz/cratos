@@ -24,6 +24,9 @@ type KubeResourceList struct {
 
 // 转换
 func (r *KubeResourceList) DeepCopyList(impl interface{}) error {
+	if len(r.Items) == 0 {
+		return nil
+	}
 	stuRef := reflect.ValueOf(impl).Elem()
 	cTypeRef := reflect.TypeOf(impl).Elem().Elem()
 	for _, v := range r.Items {

@@ -7,13 +7,17 @@ import (
 	"github.com/go-kratos/kratos/v2/middleware/status"
 	"github.com/go-kratos/kratos/v2/middleware/tracing"
 	"github.com/go-kratos/kratos/v2/transport/grpc"
-	pb "github.com/realotz/cratos/api/v1"
+	gatewayPb "github.com/realotz/cratos/api/v1/gateway"
+	nsPb "github.com/realotz/cratos/api/v1/namespace"
 	"github.com/realotz/cratos/internal/conf"
 	"github.com/realotz/cratos/internal/service"
 )
 
 // NewGRPCServer new a gRPC server.
-func NewGRPCServer(c *conf.Server, service *service.MeshService) *grpc.Server {
+func NewGRPCServer(c *conf.Server,
+	gateway *service.GatewayService,
+	namespace *service.NamespacesService,
+) *grpc.Server {
 	var opts = []grpc.ServerOption{
 		grpc.Middleware(
 			middleware.Chain(
@@ -34,6 +38,7 @@ func NewGRPCServer(c *conf.Server, service *service.MeshService) *grpc.Server {
 		opts = append(opts, grpc.Timeout(c.Grpc.Timeout.AsDuration()))
 	}
 	srv := grpc.NewServer(opts...)
-	pb.RegisterMeshServer(srv, service)
+	gatewayPb.RegisterGatewaysServer(srv, gateway)
+	nsPb.RegisterNamespacesServer(srv, namespace)
 	return srv
 }
