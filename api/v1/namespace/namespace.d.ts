@@ -5,7 +5,50 @@
 // This is a compile-time assertion to ensure that this generated file
 // is compatible with the kratos package it is being compiled against.
 
+declare namespace CratosApiV1Namespace {
+	/** ListOption */
+	type ListOption = {
+		limit?:number
+		Offset?:number
+		sort?:string
+		name?:string
+		namespace?:string
+	}
+	/** TagsList */
+	type TagsList = {
+		name?:Array<string>
+	}
+	/** NamespaceList */
+	type NamespaceList = {
+		list?:Array<K8sIoApiCoreV1.Namespace>
+		total?:number
+	}
+	/** GetKind */
+	type GetKind = {
+		name?:string
+		namespace?:string
+		version?:string
+	}
+	/** DeleteKind */
+	type DeleteKind = {
+		name?:string
+		namespace?:string
+	}
+	/** Request */
+	type Request = {
+	}
+	/** Response */
+	type Response = {
+	}
+}
+
 declare namespace K8sIoApiCoreV1 {
+	/** Namespace */
+	type Namespace = {
+		metadata?:K8sIoApimachineryPkgApisMetaV1.ObjectMeta
+		spec?:K8sIoApiCoreV1.NamespaceSpec
+		status?:K8sIoApiCoreV1.NamespaceStatus
+	}
 	/** NamespaceSpec */
 	type NamespaceSpec = {
 		finalizers?:Array<string>
@@ -23,18 +66,25 @@ declare namespace K8sIoApiCoreV1 {
 		reason?:string
 		message?:string
 	}
-	/** Namespace */
-	type Namespace = {
-		metadata?:K8sIoApimachineryPkgApisMetaV1.ObjectMeta
-		spec?:K8sIoApiCoreV1.NamespaceSpec
-		status?:K8sIoApiCoreV1.NamespaceStatus
-	}
 }
 
 declare namespace K8sIoApimachineryPkgApisMetaV1 {
+	/** ManagedFieldsEntry */
+	type ManagedFieldsEntry = {
+		manager?:string
+		operation?:string
+		apiVersion?:string
+		time?:K8sIoApimachineryPkgApisMetaV1.Time
+		fieldsType?:string
+		fieldsV1?:K8sIoApimachineryPkgApisMetaV1.FieldsV1
+	}
+	/** FieldsV1 */
+	type FieldsV1 = {
+		Raw?:string
+	}
 	/** ObjectMeta */
 	type ObjectMeta = {
-		name:string
+		name?:string
 		generateName?:string
 		namespace?:string
 		selfLink?:string
@@ -74,56 +124,6 @@ declare namespace K8sIoApimachineryPkgApisMetaV1 {
 		uid?:string
 		controller?:boolean
 		blockOwnerDeletion?:boolean
-	}
-	/** ManagedFieldsEntry */
-	type ManagedFieldsEntry = {
-		manager?:string
-		operation?:string
-		apiVersion?:string
-		time?:K8sIoApimachineryPkgApisMetaV1.Time
-		fieldsType?:string
-		fieldsV1?:K8sIoApimachineryPkgApisMetaV1.FieldsV1
-	}
-	/** FieldsV1 */
-	type FieldsV1 = {
-		Raw?:string
-	}
-}
-
-declare namespace CratosApiV1Namespace {
-	/** Response */
-	type Response = {
-	}
-	/** ListOption */
-	type ListOption = {
-		limit?:number
-		Offset?:number
-		sort?:string
-		name?:string
-		namespace?:string
-	}
-  /** TagsList */
-  type TagsList = {
-    name?:Array<string>
-  }
-	/** NamespaceList */
-	type NamespaceList = {
-		list?:Array<K8sIoApiCoreV1.Namespace>
-		total?:number
-	}
-	/** GetKind */
-	type GetKind = {
-		name?:string
-		namespace?:string
-		version?:string
-	}
-	/** DeleteKind */
-	type DeleteKind = {
-		name?:string
-		namespace?:string
-	}
-	/** Request */
-	type Request = {
 	}
 }
 

@@ -18,6 +18,12 @@ service Namespaces {
       get:"/cratos.api.v1.Namespace/List"
     };
   };
+  // Namespace tags
+  rpc ListTags(ListOption) returns(TagsList){
+    option (google.api.http) = {
+      get:"/cratos.api.v1.Namespace/ListTags"
+    };
+  };
   // 获取Namespace
   rpc Get(GetKind) returns(k8s.io.api.core.v1.Namespace){
     option (google.api.http) = {
@@ -53,6 +59,10 @@ message ListOption{
   string sort = 3;
   string name = 4;
   string namespace = 5;
+}
+
+message TagsList{
+  repeated string name=1;
 }
 
 message NamespaceList{

@@ -59,16 +59,24 @@ func (d *istioRepo) registerWatcher(watcherFunc IstioWatcher) error {
 	}
 	go func() {
 		for true {
-			ch := <-watcher.ResultChan()
-			if ch.Object == nil {
-				// 重新获取watcher
+			if watcher == nil {
 				watcher, err = watcherFunc(d.client)
 				if err != nil {
 					d.log.Errorf("kube watcher conn error %v", err)
 					time.Sleep(time.Second * 1)
 				}
+			} else {
+				ch := <-watcher.ResultChan()
+				if ch.Object == nil {
+					// 重新获取watcher
+					watcher, err = watcherFunc(d.client)
+					if err != nil {
+						d.log.Errorf("kube watcher conn error %v", err)
+						time.Sleep(time.Second * 1)
+					}
+				}
+				d.data.watchKubeEvent(ch)
 			}
-			d.data.watchKubeEvent(ch)
 		}
 	}()
 	return nil

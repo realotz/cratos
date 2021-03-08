@@ -5,36 +5,10 @@
 // This is a compile-time assertion to ensure that this generated file
 // is compatible with the kratos package it is being compiled against.
 
-declare namespace K8sIoApiCoreV1 {
-	/** NamespaceSpec */
-	type NamespaceSpec = {
-		finalizers?:Array<string>
-	}
-	/** NamespaceStatus */
-	type NamespaceStatus = {
-		phase?:string
-		conditions?:Array<K8sIoApiCoreV1.NamespaceCondition>
-	}
-	/** NamespaceCondition */
-	type NamespaceCondition = {
-		type?:string
-		status?:string
-		lastTransitionTime?:K8sIoApimachineryPkgApisMetaV1.Time
-		reason?:string
-		message?:string
-	}
-	/** Namespace */
-	type Namespace = {
-		metadata?:K8sIoApimachineryPkgApisMetaV1.ObjectMeta
-		spec?:K8sIoApiCoreV1.NamespaceSpec
-		status?:K8sIoApiCoreV1.NamespaceStatus
-	}
-}
-
 declare namespace K8sIoApimachineryPkgApisMetaV1 {
 	/** ObjectMeta */
 	type ObjectMeta = {
-		name:string
+		name?:string
 		generateName?:string
 		namespace?:string
 		selfLink?:string
@@ -90,26 +64,18 @@ declare namespace K8sIoApimachineryPkgApisMetaV1 {
 	}
 }
 
-declare namespace CratosApiV1Namespace {
-	/** Response */
-	type Response = {
-	}
-	/** ListOption */
-	type ListOption = {
-		limit?:number
-		Offset?:number
-		sort?:string
-		name?:string
-		namespace?:string
-	}
-  /** TagsList */
-  type TagsList = {
-    name?:Array<string>
-  }
-	/** NamespaceList */
-	type NamespaceList = {
-		list?:Array<K8sIoApiCoreV1.Namespace>
+declare namespace CratosApiV1Gateway {
+	/** GatewayList */
+	type GatewayList = {
+		list?:Array<CratosApiV1Gateway.Gateway>
 		total?:number
+	}
+	/** Gateway */
+	type Gateway = {
+		apiVersion?:string
+		kind?:string
+		spec?:IstioNetworkingV1alpha3.Gateway
+		metadata?:K8sIoApimachineryPkgApisMetaV1.ObjectMeta
 	}
 	/** GetKind */
 	type GetKind = {
@@ -124,6 +90,61 @@ declare namespace CratosApiV1Namespace {
 	}
 	/** Request */
 	type Request = {
+	}
+	/** Response */
+	type Response = {
+	}
+	/** ListOption */
+	type ListOption = {
+		limit?:number
+		Offset?:number
+		sort?:string
+		name?:string
+		namespace?:string
+	}
+}
+
+declare namespace IstioNetworkingV1alpha3 {
+	/** Gateway */
+	type Gateway = {
+		servers?:Array<IstioNetworkingV1alpha3.Server>
+		selector?:Map<string,string>
+	}
+	/** Server */
+	type Server = {
+		port?:IstioNetworkingV1alpha3.Port
+		bind?:string
+		hosts?:Array<string>
+		tls?:IstioNetworkingV1alpha3.ServerTLSSettings
+		default_endpoint?:string
+		name?:string
+	}
+	/** SelectorEntry */
+	type SelectorEntry = {
+		key?:string
+		value?:string
+	}
+	/** Port */
+	type Port = {
+		number?:number
+		protocol?:string
+		name?:string
+		target_port?:number
+	}
+	/** ServerTLSSettings */
+	type ServerTLSSettings = {
+		https_redirect?:boolean
+		mode?:Array<any>
+		server_certificate?:string
+		private_key?:string
+		ca_certificates?:string
+		credential_name?:string
+		subject_alt_names?:Array<string>
+		verify_certificate_spki?:Array<string>
+		verify_certificate_hash?:Array<string>
+		min_protocol_version?:Array<any>
+		max_protocol_version?:Array<any>
+		cipher_suites?:Array<string>
 	}
 }
 

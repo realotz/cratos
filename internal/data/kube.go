@@ -2,7 +2,6 @@ package data
 
 import (
 	"context"
-	"fmt"
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/realotz/cratos/internal/biz"
 	"github.com/realotz/cratos/internal/data/resources"
@@ -61,17 +60,24 @@ func (d *kubeRepo) registerWatcher(watcherFunc KubeWatcher) error {
 	}
 	go func() {
 		for true {
-			ch := <-watcher.ResultChan()
-			if ch.Object == nil {
-				// 重新获取watcher
+			if watcher == nil {
 				watcher, err = watcherFunc(d.client)
 				if err != nil {
 					d.log.Errorf("kube watcher conn error %v", err)
 					time.Sleep(time.Second * 1)
 				}
+			} else {
+				ch := <-watcher.ResultChan()
+				if ch.Object == nil {
+					// 重新获取watcher
+					watcher, err = watcherFunc(d.client)
+					if err != nil {
+						d.log.Errorf("kube watcher conn error %v", err)
+						time.Sleep(time.Second * 1)
+					}
+				}
+				d.data.watchKubeEvent(ch)
 			}
-			fmt.Println(ch.Object)
-			d.data.watchKubeEvent(ch)
 		}
 	}()
 	return nil

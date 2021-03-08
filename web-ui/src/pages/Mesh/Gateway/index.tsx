@@ -1,13 +1,14 @@
-import {Button, message, Tooltip} from 'antd';
+import {Button, message} from 'antd';
 import React from 'react';
 import { PageContainer } from '@ant-design/pro-layout';
-import { QuestionCircleOutlined } from '@ant-design/icons';
-import ProTable, { ActionType, TableDropdown } from '@ant-design/pro-table'
+import ProTable, { ActionType} from '@ant-design/pro-table'
 import type { ProColumns } from '@ant-design/pro-table';
-import {GetGatewayList,UpdateGateway} from '@/services/mesh_service.pb'
+import {List,Update} from '@/services/gateway_service.pb'
 import UpdateForm from './components/UpdateForm';
 import { useState } from 'react';
 import { useRef } from 'react';
+import {ListTags} from "@/services/namespace_service.pb";
+import {ProFormSelect} from "@ant-design/pro-form";
 
 
 /**
@@ -15,10 +16,10 @@ import { useRef } from 'react';
  *
  * @param fields
  */
-const handleUpdate = async (fields: CratosApiV1.Gateway) => {
+const handleUpdate = async (fields: CratosApiV1Gateway.Gateway) => {
   const hide = message.loading('正在配置');
   try {
-    await UpdateGateway(fields);
+    await Update(fields);
     hide();
 
     message.success('配置成功');
@@ -32,17 +33,13 @@ const handleUpdate = async (fields: CratosApiV1.Gateway) => {
 
 const GatewayPage: React.FC = () => {
   /** 新建窗口的弹窗 */
-  const [createModalVisible, handleModalVisible] = useState<boolean>(false);
   /** 分布更新窗口的弹窗 */
   const [updateModalVisible, handleUpdateModalVisible] = useState<boolean>(false);
 
-  const [showDetail, setShowDetail] = useState<boolean>(false);
-
   const actionRef = useRef<ActionType>();
-  const [currentRow, setCurrentRow] = useState<API.RuleListItem>();
-  const [selectedRowsState, setSelectedRows] = useState<API.RuleListItem[]>([]);
-  
-  const columns: ProColumns<CratosApiV1.Gateway>[] = [
+  const [currentRow, setCurrentRow] = useState<CratosApiV1Gateway.Gateway>();
+
+  const columns: ProColumns<CratosApiV1Gateway.Gateway>[] = [
     {
       title: '应用名称',
       dataIndex: 'metadata.name',
@@ -52,6 +49,27 @@ const GatewayPage: React.FC = () => {
       title: '命名空间',
       dataIndex: 'metadata.namespace',
       render: (_: React.ReactNode,row) => <a>{row.metadata?.namespace}</a>,
+      renderFormItem:(item)=>{
+        return <ProFormSelect
+          showSearch
+          request={async (params: any, props: any) => {
+            const res = await ListTags({name: params.keyWords, limit: 10})
+            var listTags = []
+            if (res.name) {
+              for (let i = 0; i < res?.name.length; i++) {
+                listTags.push({
+                  label: res.name[i],
+                  value: res.name[i],
+                  key: res.name[i],
+                })
+              }
+            }
+            return Promise.resolve(listTags)
+          }}
+          label={false}
+          name="namespace"
+        />
+      }
     },
     {
       title: '主机名',
@@ -77,23 +95,16 @@ const GatewayPage: React.FC = () => {
       width: '164px',
       key: 'option',
       valueType: 'option',
-      render: () => [
-        <a key="link">编辑</a>,
+      render: (_: React.ReactNode,row) => [
+        <a key="link" onClick={()=>{setCurrentRow(row);handleUpdateModalVisible(true)}}>编辑</a>,
         <a key="link2">复制</a>,
         <a key="link3">删除</a>,
-        // <TableDropdown
-        //   key="actionGroup"
-        //   menus={[
-        //     { key: 'copy', name: '复制' },
-        //     { key: 'delete', name: '删除' },
-        //   ]}
-        // />,
       ],
     },
   ];
   return (
     <PageContainer>
-      <ProTable<CratosApiV1.Gateway>
+      <ProTable<CratosApiV1Gateway.Gateway>
         columns={columns}
         request={async (params, sorter, filter) => {
           // 表单搜索项会从 params 传入，传递给后端接口。
@@ -102,7 +113,7 @@ const GatewayPage: React.FC = () => {
           if (params?.current && params?.current>=1){
             offset = (params?.current-1)*pageSize
           }
-          const res = await GetGatewayList({
+          const res = await List({
             limit:params.pageSize,
             Offset:offset
           })
@@ -111,7 +122,7 @@ const GatewayPage: React.FC = () => {
             success: res.total,
           });
         }}
-        rowKey={(record) => {
+        rowKey={(record:any) => {
           return record.metadata.name
         }}
         search={{
@@ -141,7 +152,7 @@ const GatewayPage: React.FC = () => {
           setCurrentRow(undefined);
         }}
         updateModalVisible={updateModalVisible}
-        values={currentRow || {}}
+        values={currentRow}
       />
     </PageContainer>
   );

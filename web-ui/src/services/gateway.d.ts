@@ -6,17 +6,6 @@
 // is compatible with the kratos package it is being compiled against.
 
 declare namespace CratosApiV1Gateway {
-	/** DeleteKind */
-	type DeleteKind = {
-		name?:string
-		namespace?:string
-	}
-	/** Request */
-	type Request = {
-	}
-	/** Response */
-	type Response = {
-	}
 	/** ListOption */
 	type ListOption = {
 		limit?:number
@@ -35,13 +24,24 @@ declare namespace CratosApiV1Gateway {
 		apiVersion?:string
 		kind?:string
 		spec?:IstioNetworkingV1alpha3.Gateway
-		metadata?:K8sIoApimachineryPkgApisMetaV1.ObjectMeta
+		metadata:K8sIoApimachineryPkgApisMetaV1.ObjectMeta
 	}
 	/** GetKind */
 	type GetKind = {
 		name?:string
 		namespace?:string
 		version?:string
+	}
+	/** DeleteKind */
+	type DeleteKind = {
+		name?:string
+		namespace?:string
+	}
+	/** Request */
+	type Request = {
+	}
+	/** Response */
+	type Response = {
 	}
 }
 
@@ -90,6 +90,10 @@ declare namespace IstioNetworkingV1alpha3 {
 }
 
 declare namespace K8sIoApimachineryPkgApisMetaV1 {
+	/** FieldsV1 */
+	type FieldsV1 = {
+		Raw?:string
+	}
 	/** ObjectMeta */
 	type ObjectMeta = {
 		name?:string
@@ -141,10 +145,6 @@ declare namespace K8sIoApimachineryPkgApisMetaV1 {
 		time?:K8sIoApimachineryPkgApisMetaV1.Time
 		fieldsType?:string
 		fieldsV1?:K8sIoApimachineryPkgApisMetaV1.FieldsV1
-	}
-	/** FieldsV1 */
-	type FieldsV1 = {
-		Raw?:string
 	}
 }
 

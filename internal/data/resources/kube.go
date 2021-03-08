@@ -77,6 +77,9 @@ type KubeResources struct {
 }
 
 func (e Event) Converts() (*KubeResources, error) {
+	if e.Object == nil {
+		return nil, errors.New("event type is nil")
+	}
 	objType := reflect.TypeOf(e.Object)
 	if c, ok := eventType[objType.String()]; ok {
 		return c(e.Object)

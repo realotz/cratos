@@ -29,6 +29,8 @@ type NamespacesHandler interface {
 
 	List(context.Context, *ListOption) (*NamespaceList, error)
 
+	ListTags(context.Context, *ListOption) (*TagsList, error)
+
 	Update(context.Context, *v1.Namespace) (*Response, error)
 }
 
@@ -48,6 +50,29 @@ func NewNamespacesHandler(srv NamespacesHandler, opts ...http1.HandleOption) htt
 		}
 		next := func(ctx context.Context, req interface{}) (interface{}, error) {
 			return srv.List(ctx, req.(*ListOption))
+		}
+		if h.Middleware != nil {
+			next = h.Middleware(next)
+		}
+		out, err := next(r.Context(), &in)
+		if err != nil {
+			h.Error(w, r, err)
+			return
+		}
+		if err := h.Encode(w, r, out); err != nil {
+			h.Error(w, r, err)
+		}
+	}).Methods("GET")
+
+	r.HandleFunc("/cratos.api.v1.Namespace/ListTags", func(w http.ResponseWriter, r *http.Request) {
+		var in ListOption
+
+		if err := h.Decode(r, &in); err != nil {
+			h.Error(w, r, err)
+			return
+		}
+		next := func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.ListTags(ctx, req.(*ListOption))
 		}
 		if h.Middleware != nil {
 			next = h.Middleware(next)

@@ -30,7 +30,6 @@ require (
 	istio.io/api v0.0.0-20210302211031-2e1e4d7e6f4b
 	istio.io/client-go v0.0.0-20210302212237-0ceb5261e848
 	k8s.io/api v0.20.4
-	k8s.io/apiextensions-apiserver v0.20.4
 	k8s.io/apimachinery v0.20.4
 	k8s.io/client-go v0.20.4
 )

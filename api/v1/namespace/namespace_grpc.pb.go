@@ -21,6 +21,8 @@ const _ = grpc.SupportPackageIsVersion7
 type NamespacesClient interface {
 	// Namespace列表
 	List(ctx context.Context, in *ListOption, opts ...grpc.CallOption) (*NamespaceList, error)
+	// Namespace tags
+	ListTags(ctx context.Context, in *ListOption, opts ...grpc.CallOption) (*TagsList, error)
 	// 获取Namespace
 	Get(ctx context.Context, in *GetKind, opts ...grpc.CallOption) (*v1.Namespace, error)
 	// 创建 Namespace
@@ -42,6 +44,15 @@ func NewNamespacesClient(cc grpc.ClientConnInterface) NamespacesClient {
 func (c *namespacesClient) List(ctx context.Context, in *ListOption, opts ...grpc.CallOption) (*NamespaceList, error) {
 	out := new(NamespaceList)
 	err := c.cc.Invoke(ctx, "/cratos.api.v1.namespace.Namespaces/List", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *namespacesClient) ListTags(ctx context.Context, in *ListOption, opts ...grpc.CallOption) (*TagsList, error) {
+	out := new(TagsList)
+	err := c.cc.Invoke(ctx, "/cratos.api.v1.namespace.Namespaces/ListTags", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -90,6 +101,8 @@ func (c *namespacesClient) Delete(ctx context.Context, in *DeleteKind, opts ...g
 type NamespacesServer interface {
 	// Namespace列表
 	List(context.Context, *ListOption) (*NamespaceList, error)
+	// Namespace tags
+	ListTags(context.Context, *ListOption) (*TagsList, error)
 	// 获取Namespace
 	Get(context.Context, *GetKind) (*v1.Namespace, error)
 	// 创建 Namespace
@@ -107,6 +120,9 @@ type UnimplementedNamespacesServer struct {
 
 func (UnimplementedNamespacesServer) List(context.Context, *ListOption) (*NamespaceList, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method List not implemented")
+}
+func (UnimplementedNamespacesServer) ListTags(context.Context, *ListOption) (*TagsList, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListTags not implemented")
 }
 func (UnimplementedNamespacesServer) Get(context.Context, *GetKind) (*v1.Namespace, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Get not implemented")
@@ -147,6 +163,24 @@ func _Namespaces_List_Handler(srv interface{}, ctx context.Context, dec func(int
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(NamespacesServer).List(ctx, req.(*ListOption))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Namespaces_ListTags_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListOption)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(NamespacesServer).ListTags(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/cratos.api.v1.namespace.Namespaces/ListTags",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(NamespacesServer).ListTags(ctx, req.(*ListOption))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -233,6 +267,10 @@ var Namespaces_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "List",
 			Handler:    _Namespaces_List_Handler,
+		},
+		{
+			MethodName: "ListTags",
+			Handler:    _Namespaces_ListTags_Handler,
 		},
 		{
 			MethodName: "Get",

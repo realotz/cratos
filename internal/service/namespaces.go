@@ -21,6 +21,14 @@ func NewNamespacesService(uc *biz.KubeUsecase, logger log.Logger) *NamespacesSer
 	return &NamespacesService{uc: uc, log: log.NewHelper("service/namespace", logger)}
 }
 
+func (s *NamespacesService) ListTags(ctx context.Context, request *pb.ListOption) (*pb.TagsList, error) {
+	list, err := s.uc.GetNamespaceTags(ctx, request)
+	if err != nil {
+		return nil, err
+	}
+	return list, nil
+}
+
 func (s *NamespacesService) List(ctx context.Context, req *pb.ListOption) (*pb.NamespaceList, error) {
 	list, err := s.uc.GetNamespaceList(ctx, req)
 	if err != nil {

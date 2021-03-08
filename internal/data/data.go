@@ -82,8 +82,7 @@ func (d *Data) watchKubeEvent(ev watch.Event) {
 	case watch.Added, watch.Modified, watch.Bookmark:
 		var outResources resources.KubeResources
 		row := d.db.Where("kind = ? and api_version=?", resource.Kind, resource.APIVersion).
-			First(&outResources, datatypes.JSONQuery("mete_data").Equals(resource.Name, "name"),
-				datatypes.JSONQuery("mete_data").Equals(resource.Namespace, "namespace"))
+			First(&outResources, datatypes.JSONQuery("mete_data").Equals(resource.Name, "name"))
 		if errors.Is(row.Error, gorm.ErrRecordNotFound) {
 			resource.CreatedAt = time.Now()
 			d.db.Create(&resource)
